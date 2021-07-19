@@ -1,0 +1,8 @@
+stm32f4xx_hal_gpio.c:164:6:HAL_GPIO_Init	40	static
+stm32f4xx_hal_gpio.c:292:6:HAL_GPIO_DeInit	32	static
+stm32f4xx_hal_gpio.c:373:15:HAL_GPIO_ReadPin	24	static
+stm32f4xx_hal_gpio.c:408:6:HAL_GPIO_WritePin	16	static
+stm32f4xx_hal_gpio.c:431:6:HAL_GPIO_TogglePin	24	static
+stm32f4xx_hal_gpio.c:456:19:HAL_GPIO_LockPin	24	static
+stm32f4xx_hal_gpio.c:490:6:HAL_GPIO_EXTI_IRQHandler	16	static
+stm32f4xx_hal_gpio.c:505:13:HAL_GPIO_EXTI_Callback	16	static

@@ -9,6 +9,7 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include nRF24L01+/subdir.mk
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
@@ -61,8 +62,8 @@ all: main-build
 main-build: stm32f411_fw_nrf24l01_plus.elf secondary-outputs
 
 # Tool invocations
-stm32f411_fw_nrf24l01_plus.elf: $(OBJS) $(USER_OBJS) C:\Users\mokhw\STM32CubeIDE\workspace_1.6.1\stm32f411_fw_nrf24l01_plus\STM32F411CEUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "stm32f411_fw_nrf24l01_plus.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\mokhw\STM32CubeIDE\workspace_1.6.1\stm32f411_fw_nrf24l01_plus\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="stm32f411_fw_nrf24l01_plus.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+stm32f411_fw_nrf24l01_plus.elf: $(OBJS) $(USER_OBJS) C:\Users\mokhw\Desktop\GitHub\stm32_hal_nrf24l01_plus\stm32f411_fw_nrf24l01_plus\STM32F411CEUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "stm32f411_fw_nrf24l01_plus.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\mokhw\Desktop\GitHub\stm32_hal_nrf24l01_plus\stm32f411_fw_nrf24l01_plus\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="stm32f411_fw_nrf24l01_plus.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

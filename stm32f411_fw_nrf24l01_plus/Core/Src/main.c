@@ -25,6 +25,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include "nrf24l01p.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,6 +46,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+
+uint8_t reg_value_temp1;
+uint8_t reg_value_temp2;
 
 /* USER CODE END PV */
 
@@ -89,6 +94,11 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
+  reg_value_temp1 = nrf24l01p_cmd_r_register(NRF24L01P_REG_CONFIG);
+  //nrf24l01p_power_up();
+  //nrf24l01p_power_down();
+  reg_value_temp2 = nrf24l01p_cmd_r_register(NRF24L01P_REG_CONFIG);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -98,6 +108,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+
   }
   /* USER CODE END 3 */
 }

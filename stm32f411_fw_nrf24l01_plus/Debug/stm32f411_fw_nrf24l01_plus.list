@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  0002000c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00007315  00000000  00000000  0002003c  2**0
+ 12 .debug_info   0000787d  00000000  00000000  0002003c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 0000165b  00000000  00000000  00027351  2**0
+ 13 .debug_abbrev 0000174b  00000000  00000000  000278b9  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 000006b0  00000000  00000000  000289b0  2**3
+ 14 .debug_aranges 000007d0  00000000  00000000  00029008  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 000005e8  00000000  00000000  00029060  2**3
+ 15 .debug_ranges 00000708  00000000  00000000  000297d8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00014ebc  00000000  00000000  00029648  2**0
+ 16 .debug_macro  00014ebc  00000000  00000000  00029ee0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00007ca7  00000000  00000000  0003e504  2**0
+ 17 .debug_line   000080ec  00000000  00000000  0003ed9c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00080f55  00000000  00000000  000461ab  2**0
+ 18 .debug_str    000813b3  00000000  00000000  00046e88  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  000c7100  2**0
+ 19 .comment      00000053  00000000  00000000  000c823b  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00001930  00000000  00000000  000c7154  2**2
+ 20 .debug_frame  00001dcc  00000000  00000000  000c8290  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -3654,7 +3654,7 @@ HAL_StatusTypeDef HAL_SPI_Init(SPI_HandleTypeDef *hspi)
  80016ca:	2b00      	cmp	r3, #0
  80016cc:	d101      	bne.n	80016d2 <HAL_SPI_Init+0x12>
   {
-    return HAL_ERROR;
+    return HAL_ERROR;/**
  80016ce:	2301      	movs	r3, #1
  80016d0:	e07b      	b.n	80017ca <HAL_SPI_Init+0x10a>
   assert_param(IS_SPI_DATASIZE(hspi->Init.DataSize));
@@ -5194,10 +5194,10 @@ static HAL_StatusTypeDef SPI_EndRxTxTransaction(SPI_HandleTypeDef *hspi, uint32_
  8001f94:	165e9f81 	.word	0x165e9f81
 
 08001f98 <cs_high>:
-uint8_t ack_payroad[32];    // in RX mode
 
 
-/* Write CS Pin */
+/* nRF24L01+ CS, CE Status */
+
 static void cs_high()
 {
  8001f98:	b580      	push	{r7, lr}
@@ -5231,10 +5231,10 @@ static void cs_low()
  8001fc4:	40020000 	.word	0x40020000
 
 08001fc8 <nrf24l01p_cmd_r_register>:
-}
 
 
-/* nRF24L01+ Functions */
+/* nRF24L01+ Command Functions */
+
 uint8_t nrf24l01p_cmd_r_register(uint8_t reg)
 {
  8001fc8:	b580      	push	{r7, lr}

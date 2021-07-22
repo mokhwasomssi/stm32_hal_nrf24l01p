@@ -315,7 +315,10 @@ HAL_StatusTypeDef HAL_SPI_Init(SPI_HandleTypeDef *hspi)
   /* Check the SPI handle allocation */
   if (hspi == NULL)
   {
-    return HAL_ERROR;
+    return HAL_ERROR;/**
+     * @brief  Enable dynamic payload length in RX mode
+     * @param  data_pipe 0 - 5
+     */
   }
 
   /* Check the parameters */

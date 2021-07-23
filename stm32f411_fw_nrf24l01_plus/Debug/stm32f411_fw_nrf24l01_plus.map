@@ -2514,8 +2514,12 @@ Discarded input sections
  .bss           0x0000000000000000        0x0 nRF24L01+/nrf24l01p.o
  .text.ce_high  0x0000000000000000       0x18 nRF24L01+/nrf24l01p.o
  .text.ce_low   0x0000000000000000       0x18 nRF24L01+/nrf24l01p.o
- .text.nrf24l01p_init
-                0x0000000000000000       0x40 nRF24L01+/nrf24l01p.o
+ .text.nrf24l01p_reset
+                0x0000000000000000       0x44 nRF24L01+/nrf24l01p.o
+ .text.nrf24l01p_rx_init
+                0x0000000000000000       0x52 nRF24L01+/nrf24l01p.o
+ .text.nrf24l01p_rx_read
+                0x0000000000000000       0x10 nRF24L01+/nrf24l01p.o
  .text.nrf24l01p_cmd_w_register
                 0x0000000000000000       0x5c nRF24L01+/nrf24l01p.o
  .text.nrf24l01p_cmd_r_rx_payload
@@ -2528,6 +2532,8 @@ Discarded input sections
                 0x0000000000000000       0x30 nRF24L01+/nrf24l01p.o
  .text.nrf24l01p_cmd_reuse_tx_pl
                 0x0000000000000000       0x30 nRF24L01+/nrf24l01p.o
+ .text.nrf24l01p_cmd_r_rx_pl_wid
+                0x0000000000000000       0x40 nRF24L01+/nrf24l01p.o
  .text.nrf24l01p_cmd_w_ack_payload
                 0x0000000000000000       0x58 nRF24L01+/nrf24l01p.o
  .text.nrf24l01p_cmd_w_tx_payload_noack
@@ -3157,7 +3163,7 @@ LOAD c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
 LOAD c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libm.a
 LOAD c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/thumb/v7e-m+fp/hard\libgcc.a
 
-.debug_info     0x0000000000000000     0x787d
+.debug_info     0x0000000000000000     0x78fe
  .debug_info    0x0000000000000000      0x521 Core/Src/gpio.o
  .debug_info    0x0000000000000521      0xafc Core/Src/main.o
  .debug_info    0x000000000000101d      0xa7e Core/Src/spi.o
@@ -3170,9 +3176,9 @@ LOAD c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
  .debug_info    0x0000000000003dfa      0x862 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
  .debug_info    0x000000000000465c      0x9be Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
  .debug_info    0x000000000000501a     0x17b8 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.o
- .debug_info    0x00000000000067d2     0x10ab nRF24L01+/nrf24l01p.o
+ .debug_info    0x00000000000067d2     0x112c nRF24L01+/nrf24l01p.o
 
-.debug_abbrev   0x0000000000000000     0x174b
+.debug_abbrev   0x0000000000000000     0x1781
  .debug_abbrev  0x0000000000000000      0x14e Core/Src/gpio.o
  .debug_abbrev  0x000000000000014e      0x1ee Core/Src/main.o
  .debug_abbrev  0x000000000000033c      0x1bb Core/Src/spi.o
@@ -3185,9 +3191,9 @@ LOAD c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
  .debug_abbrev  0x0000000000000d97      0x1f1 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
  .debug_abbrev  0x0000000000000f88      0x275 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
  .debug_abbrev  0x00000000000011fd      0x26e Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.o
- .debug_abbrev  0x000000000000146b      0x2e0 nRF24L01+/nrf24l01p.o
+ .debug_abbrev  0x000000000000146b      0x316 nRF24L01+/nrf24l01p.o
 
-.debug_aranges  0x0000000000000000      0x7d0
+.debug_aranges  0x0000000000000000      0x7e8
  .debug_aranges
                 0x0000000000000000       0x20 Core/Src/gpio.o
  .debug_aranges
@@ -3213,9 +3219,9 @@ LOAD c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
  .debug_aranges
                 0x0000000000000438      0x1d0 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.o
  .debug_aranges
-                0x0000000000000608      0x1c8 nRF24L01+/nrf24l01p.o
+                0x0000000000000608      0x1e0 nRF24L01+/nrf24l01p.o
 
-.debug_ranges   0x0000000000000000      0x708
+.debug_ranges   0x0000000000000000      0x720
  .debug_ranges  0x0000000000000000       0x10 Core/Src/gpio.o
  .debug_ranges  0x0000000000000010       0x20 Core/Src/main.o
  .debug_ranges  0x0000000000000030       0x20 Core/Src/spi.o
@@ -3228,9 +3234,9 @@ LOAD c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
  .debug_ranges  0x00000000000002d0       0x48 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
  .debug_ranges  0x0000000000000318       0x78 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
  .debug_ranges  0x0000000000000390      0x1c0 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.o
- .debug_ranges  0x0000000000000550      0x1b8 nRF24L01+/nrf24l01p.o
+ .debug_ranges  0x0000000000000550      0x1d0 nRF24L01+/nrf24l01p.o
 
-.debug_macro    0x0000000000000000    0x14ebc
+.debug_macro    0x0000000000000000    0x14f1e
  .debug_macro   0x0000000000000000      0x1d3 Core/Src/gpio.o
  .debug_macro   0x00000000000001d3      0xaa8 Core/Src/gpio.o
  .debug_macro   0x0000000000000c7b      0x295 Core/Src/gpio.o
@@ -3271,20 +3277,20 @@ LOAD c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
  .debug_macro   0x0000000000013744      0x126 Core/Src/gpio.o
  .debug_macro   0x000000000001386a       0x1c Core/Src/gpio.o
  .debug_macro   0x0000000000013886      0x1ea Core/Src/main.o
- .debug_macro   0x0000000000013a70      0x106 Core/Src/main.o
- .debug_macro   0x0000000000013b76      0x1d3 Core/Src/spi.o
- .debug_macro   0x0000000000013d49      0x1c9 Core/Src/stm32f4xx_hal_msp.o
- .debug_macro   0x0000000000013f12      0x1d3 Core/Src/stm32f4xx_it.o
- .debug_macro   0x00000000000140e5      0x1ba Core/Src/system_stm32f4xx.o
- .debug_macro   0x000000000001429f      0x21a Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
- .debug_macro   0x00000000000144b9      0x1ba Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
- .debug_macro   0x0000000000014673      0x1c0 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
- .debug_macro   0x0000000000014833      0x1de Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
- .debug_macro   0x0000000000014a11      0x1c9 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.o
- .debug_macro   0x0000000000014bda      0x1e2 nRF24L01+/nrf24l01p.o
- .debug_macro   0x0000000000014dbc      0x100 nRF24L01+/nrf24l01p.o
+ .debug_macro   0x0000000000013a70      0x137 Core/Src/main.o
+ .debug_macro   0x0000000000013ba7      0x1d3 Core/Src/spi.o
+ .debug_macro   0x0000000000013d7a      0x1c9 Core/Src/stm32f4xx_hal_msp.o
+ .debug_macro   0x0000000000013f43      0x1d3 Core/Src/stm32f4xx_it.o
+ .debug_macro   0x0000000000014116      0x1ba Core/Src/system_stm32f4xx.o
+ .debug_macro   0x00000000000142d0      0x21a Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
+ .debug_macro   0x00000000000144ea      0x1ba Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
+ .debug_macro   0x00000000000146a4      0x1c0 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
+ .debug_macro   0x0000000000014864      0x1de Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
+ .debug_macro   0x0000000000014a42      0x1c9 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.o
+ .debug_macro   0x0000000000014c0b      0x1e2 nRF24L01+/nrf24l01p.o
+ .debug_macro   0x0000000000014ded      0x131 nRF24L01+/nrf24l01p.o
 
-.debug_line     0x0000000000000000     0x80ec
+.debug_line     0x0000000000000000     0x8146
  .debug_line    0x0000000000000000      0x6a4 Core/Src/gpio.o
  .debug_line    0x00000000000006a4      0x78c Core/Src/main.o
  .debug_line    0x0000000000000e30      0x706 Core/Src/spi.o
@@ -3297,35 +3303,35 @@ LOAD c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
  .debug_line    0x0000000000004067      0xab8 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
  .debug_line    0x0000000000004b1f      0xcf6 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
  .debug_line    0x0000000000005815     0x1c04 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.o
- .debug_line    0x0000000000007419      0xcd3 nRF24L01+/nrf24l01p.o
+ .debug_line    0x0000000000007419      0xd2d nRF24L01+/nrf24l01p.o
 
-.debug_str      0x0000000000000000    0x813b3
+.debug_str      0x0000000000000000    0x8141e
  .debug_str     0x0000000000000000    0x7ead9 Core/Src/gpio.o
                                       0x7ed5c (size before relaxing)
- .debug_str     0x000000000007ead9      0xa9d Core/Src/main.o
-                                      0x7f7ab (size before relaxing)
- .debug_str     0x000000000007f576       0x4b Core/Src/spi.o
+ .debug_str     0x000000000007ead9      0xab8 Core/Src/main.o
+                                      0x7f7c6 (size before relaxing)
+ .debug_str     0x000000000007f591       0x4b Core/Src/spi.o
                                       0x7f1b9 (size before relaxing)
- .debug_str     0x000000000007f5c1       0x2c Core/Src/stm32f4xx_hal_msp.o
+ .debug_str     0x000000000007f5dc       0x2c Core/Src/stm32f4xx_hal_msp.o
                                       0x7ecbf (size before relaxing)
- .debug_str     0x000000000007f5ed       0xbd Core/Src/stm32f4xx_it.o
+ .debug_str     0x000000000007f608       0xbd Core/Src/stm32f4xx_it.o
                                       0x7ec3b (size before relaxing)
- .debug_str     0x000000000007f6aa       0xaf Core/Src/system_stm32f4xx.o
+ .debug_str     0x000000000007f6c5       0xaf Core/Src/system_stm32f4xx.o
                                       0x7ece5 (size before relaxing)
- .debug_str     0x000000000007f759       0x36 Core/Startup/startup_stm32f411ceux.o
+ .debug_str     0x000000000007f774       0x36 Core/Startup/startup_stm32f411ceux.o
                                          0x8d (size before relaxing)
- .debug_str     0x000000000007f78f      0x90f Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
+ .debug_str     0x000000000007f7aa      0x90f Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
                                       0x7f66f (size before relaxing)
- .debug_str     0x000000000008009e      0x399 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
+ .debug_str     0x00000000000800b9      0x399 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
                                       0x7f44c (size before relaxing)
- .debug_str     0x0000000000080437      0x15f Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
+ .debug_str     0x0000000000080452      0x15f Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
                                       0x7ee8c (size before relaxing)
- .debug_str     0x0000000000080596      0x259 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
+ .debug_str     0x00000000000805b1      0x259 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
                                       0x7f0e7 (size before relaxing)
- .debug_str     0x00000000000807ef      0x584 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.o
+ .debug_str     0x000000000008080a      0x584 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.o
                                       0x7f577 (size before relaxing)
- .debug_str     0x0000000000080d73      0x640 nRF24L01+/nrf24l01p.o
-                                      0x7fbc4 (size before relaxing)
+ .debug_str     0x0000000000080d8e      0x690 nRF24L01+/nrf24l01p.o
+                                      0x7fc2f (size before relaxing)
 
 .comment        0x0000000000000000       0x53
  .comment       0x0000000000000000       0x53 Core/Src/gpio.o
@@ -3342,7 +3348,7 @@ LOAD c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
  .comment       0x0000000000000053       0x54 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.o
  .comment       0x0000000000000053       0x54 nRF24L01+/nrf24l01p.o
 
-.debug_frame    0x0000000000000000     0x1dcc
+.debug_frame    0x0000000000000000     0x1e2c
  .debug_frame   0x0000000000000000       0x34 Core/Src/gpio.o
  .debug_frame   0x0000000000000034       0x68 Core/Src/main.o
  .debug_frame   0x000000000000009c       0x74 Core/Src/spi.o
@@ -3354,8 +3360,8 @@ LOAD c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
  .debug_frame   0x0000000000000ab0      0x14c Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
  .debug_frame   0x0000000000000bfc      0x1ec Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
  .debug_frame   0x0000000000000de8      0x824 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.o
- .debug_frame   0x000000000000160c      0x714 nRF24L01+/nrf24l01p.o
- .debug_frame   0x0000000000001d20       0x2c c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(lib_a-init.o)
- .debug_frame   0x0000000000001d4c       0x20 c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(lib_a-memset.o)
- .debug_frame   0x0000000000001d6c       0x2c c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/thumb/v7e-m+fp/hard\libgcc.a(_aeabi_uldivmod.o)
- .debug_frame   0x0000000000001d98       0x34 c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/thumb/v7e-m+fp/hard\libgcc.a(_udivmoddi4.o)
+ .debug_frame   0x000000000000160c      0x774 nRF24L01+/nrf24l01p.o
+ .debug_frame   0x0000000000001d80       0x2c c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(lib_a-init.o)
+ .debug_frame   0x0000000000001dac       0x20 c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(lib_a-memset.o)
+ .debug_frame   0x0000000000001dcc       0x2c c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/thumb/v7e-m+fp/hard\libgcc.a(_aeabi_uldivmod.o)
+ .debug_frame   0x0000000000001df8       0x34 c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/thumb/v7e-m+fp/hard\libgcc.a(_udivmoddi4.o)

@@ -40,7 +40,7 @@ static void ce_low()
 
 /* nRF24L01+ Main Functions */
 
-void nrf24l01p_init()
+void nrf24l01p_reset()
 {
     // STATUS, FIFO_STATUS register
     nrf24l01p_reset_status();
@@ -75,12 +75,65 @@ void nrf24l01p_init()
 
     // CS Pin Idle
     cs_high();
+
+    // CE = 0
+    ce_low();
 }
 
+/**
+ * @brief  Initialize when nRF24L01+ is used as a receiver
+ */
+void nrf24l01p_rx_init()
+{
+    nrf24l01p_reset();
+
+    nrf24l01p_power_up();
+    nrf24l01p_prx_mode();
+    nrf24l01p_enable_crc();
+    nrf24l01p_crc_length(1);
+    nrf24l01p_enable_all_interrupt();
+    
+#ifdef ENHANCED_SHOCKBURST
+    nrf24l01p_enable_enhanced_shockburst();
+    nrf24l01p_rx_set_dynamic_payload(0);
+#endif
+
+#ifdef SHOCKBURST
+    nrf24l01p_disable_enhanced_shockburst();
+    nrf24l01p_rx_set_static_payload(0, 32);
+#endif
+
+    nrf24l01p_set_rx_address(0);
+    nrf24l01p_set_address_widths(5);
+
+    nrf24l01p_set_rf_channel(2450);
+    nrf24l01p_set_rf_output_power(3);
+    nrf24l01p_set_rf_data_rate(0);
+
+    ce_high();
+}
+
+/**
+ * @brief   Read RX FIFO
+ * @details 
+ */
+uint8_t* nrf24l01p_rx_read()
+{
+    if(!nrf24l01p_is_rx_empty())
+    {
+        nrf24l01p_cmd_r_rx_payload();
+    }
+
+    
+}
 
 /* nRF24L01+ Command Functions */
 
-uint8_t nrf24l01p_cmd_r_register(uint8_t reg)
+/** 
+ * @brief  Command for read register
+ * @param  reg register address
+ */
+uint8_t nrf24l01p_read_register(uint8_t reg)
 {
     uint8_t command = NRF24L01P_CMD_R_REGISTER | reg;
     uint8_t status;
@@ -94,7 +147,12 @@ uint8_t nrf24l01p_cmd_r_register(uint8_t reg)
     return read_data;
 }
 
-uint8_t nrf24l01p_cmd_w_register(uint8_t reg, uint8_t value)
+/**
+ * @brief  Command for write register
+ * @param  reg register address
+ * @param  value register value to update
+ */
+uint8_t nrf24l01p_write_register(uint8_t reg, uint8_t value)
 {
     uint8_t command = NRF24L01P_CMD_W_REGISTER | reg;
     uint8_t status;
@@ -106,9 +164,13 @@ uint8_t nrf24l01p_cmd_w_register(uint8_t reg, uint8_t value)
     cs_high();
 
     return write_data;
-} 
+}
 
-void nrf24l01p_cmd_r_rx_payload(uint8_t length)
+/**
+ * @brief  Read RX-payload. Payload is deleted from FIFO after it is read.
+ * @param  length 1 - 32bytes
+ */
+void nrf24l01p_read_rx_payload(uint8_t length)
 {
     uint8_t command = NRF24L01P_CMD_R_RX_PAYLOAD;
     uint8_t status;
@@ -119,7 +181,11 @@ void nrf24l01p_cmd_r_rx_payload(uint8_t length)
     cs_high();
 }
 
-void nrf24l01p_cmd_w_tx_payload(uint8_t length)
+/**
+ * @brief  Write TX-payload.
+ * @param  length 1 - 32bytes
+ */
+void nrf24l01p_write_tx_payload(uint8_t length)
 {
     uint8_t command = NRF24L01P_CMD_W_TX_PAYLOAD;
     uint8_t status;
@@ -133,7 +199,7 @@ void nrf24l01p_cmd_w_tx_payload(uint8_t length)
 /**
  * @brief  Flush TX FIFO, used in TX mode
  */
-void nrf24l01p_cmd_flush_tx()
+void nrf24l01p_flush_tx()
 {
     uint8_t command = NRF24L01P_CMD_FLUSH_TX;
     uint8_t status;
@@ -146,7 +212,7 @@ void nrf24l01p_cmd_flush_tx()
 /**
  * @brief  Flush RX FIFO, used in RX mode
  */
-void nrf24l01p_cmd_flush_rx()
+void nrf24l01p_flush_rx()
 {
     uint8_t command = NRF24L01P_CMD_FLUSH_RX;
     uint8_t status;
@@ -156,7 +222,10 @@ void nrf24l01p_cmd_flush_rx()
     cs_high();
 }
 
-void nrf24l01p_cmd_reuse_tx_pl()
+/**
+ * @brief  Resue last transmitted payload
+ */
+void nrf24l01p_reuse_tx_payload()
 {
     uint8_t command = NRF24L01P_CMD_REUSE_TX_PL;
     uint8_t status;
@@ -166,7 +235,30 @@ void nrf24l01p_cmd_reuse_tx_pl()
     cs_high();
 }
 
-void nrf24l01p_cmd_w_ack_payload(uint8_t data_pipe, uint8_t length)
+/**
+ * @brief  Read RX payload width for the top RX FIFO
+ * @retval RX payload width
+ */
+uint8_t nrf24l01p_read_rx_payload_width()
+{
+    uint8_t command = NRF24L01P_CMD_R_RX_PL_WID;
+    uint8_t status;
+    uint8_t rx_payload_width;
+
+    cs_low();
+    HAL_SPI_TransmitReceive(NRF24L01P_SPI, &command, &status, 1, 2000);
+    HAL_SPI_Receive(NRF24L01P_SPI, &rx_payload_width, 1, 2000);
+    cs_high();
+
+    return rx_payload_width;
+}
+
+/**
+ * @brief  Write payload to be transmitted together with ACK packet on pipe
+ * @param  data_pipe 0 - 5
+ * @param  length 1 - 32bytes
+ */
+void nrf24l01p_write_tx_payload_with_ack(uint8_t data_pipe, uint8_t length)
 {
     uint8_t command = NRF24L01P_CMD_W_ACK_PAYLOAD | data_pipe;
     uint8_t status;
@@ -178,7 +270,11 @@ void nrf24l01p_cmd_w_ack_payload(uint8_t data_pipe, uint8_t length)
     cs_high(); 
 }
 
-void nrf24l01p_cmd_w_tx_payload_noack(uint8_t length)
+/**
+ * @brief  Disable AUTOACK on this specific packet
+ * @param  length 1 - 32bytes
+ */
+void nrf24l01p_write_tx_payload_with_noack(uint8_t length)
 {
     uint8_t command = NRF24L01P_CMD_W_TX_PAYLOAD_NOACK;
     uint8_t status;
@@ -214,10 +310,10 @@ uint8_t nrf24l01p_cmd_nop()
 void nrf24l01p_reset_status()
 {
     uint8_t reset_status = 0x0E;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_STATUS, reset_status);
+    nrf24l01p_write_register(NRF24L01P_REG_STATUS, reset_status);
 
     uint8_t reset_fifo_status = 0x11;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_FIFO_STATUS, reset_fifo_status);
+    nrf24l01p_write_register(NRF24L01P_REG_FIFO_STATUS, reset_fifo_status);
 }
 
 uint8_t nrf24l01p_get_status()
@@ -225,9 +321,68 @@ uint8_t nrf24l01p_get_status()
     return nrf24l01p_cmd_nop();
 }
 
+/**
+ * @brief  Get RX/TX FIFO Status
+ * @retval RX_EMPTY, RX_FULL, TX_EMPTY, TX_FULL, TX_REUSE
+ */
 uint8_t nrf24l01p_get_fifo_status()
 {
-    return nrf24l01p_cmd_r_register(NRF24L01P_REG_FIFO_STATUS);
+    return nrf24l01p_read_register(NRF24L01P_REG_FIFO_STATUS);
+}
+
+bool nrf24l01p_is_rx_empty()
+{
+    uint8_t rx_empty = nrf24l01p_get_fifo_status();
+    rx_empty &= 0x01;
+
+    if(rx_empty)
+        return true;
+    else
+        return false;
+}
+
+bool nrf24l01p_is_rx_full()
+{
+    uint8_t rx_full = nrf24l01p_get_fifo_status();
+    rx_full &= 0x02;
+
+    if(rx_full)
+        return true;
+    else
+        return false;
+}
+
+bool nrf24l01p_is_tx_empty()
+{
+    uint8_t tx_empty = nrf24l01p_get_fifo_status();
+    tx_empty &= 0x10;
+
+    if(tx_empty)
+        return true;
+    else
+        return false;
+}
+
+bool nrf24l01p_is_tx_full()
+{
+    uint8_t tx_full = nrf24l01p_get_fifo_status();
+    tx_full &= 0x20;
+
+    if(tx_full)
+        return true;
+    else
+        return false;
+}
+
+bool nrf24l01p_is_tx_reuse()
+{
+    uint8_t tx_reuse = nrf24l01p_get_fifo_status();
+    tx_reuse &= 0x40;
+
+    if(tx_reuse)
+        return true;
+    else
+        return false;
 }
 
 
@@ -246,9 +401,9 @@ void nrf24l01p_reset_interrupt()
  */
 void nrf24l01p_enable_all_interrupt()
 {
-    uint8_t new_config = nrf24l01p_cmd_r_register(NRF24L01P_REG_CONFIG);
+    uint8_t new_config = nrf24l01p_read_register(NRF24L01P_REG_CONFIG);
     new_config &= 0x0F;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_CONFIG, new_config);
+    nrf24l01p_write_register(NRF24L01P_REG_CONFIG, new_config);
 }
 
 /**
@@ -256,9 +411,9 @@ void nrf24l01p_enable_all_interrupt()
  */
 void nrf24l01p_disable_rx_dr_interrupt()
 {
-    uint8_t new_config = nrf24l01p_cmd_r_register(NRF24L01P_REG_CONFIG);
+    uint8_t new_config = nrf24l01p_read_register(NRF24L01P_REG_CONFIG);
     new_config |= 1 << 6;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_CONFIG, new_config);
+    nrf24l01p_write_register(NRF24L01P_REG_CONFIG, new_config);
 }
 
 /**
@@ -266,9 +421,9 @@ void nrf24l01p_disable_rx_dr_interrupt()
  */
 void nrf24l01p_disable_tx_ds_interrupt()
 {
-    uint8_t new_config = nrf24l01p_cmd_r_register(NRF24L01P_REG_CONFIG);
+    uint8_t new_config = nrf24l01p_read_register(NRF24L01P_REG_CONFIG);
     new_config |= 1 << 5;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_CONFIG, new_config);
+    nrf24l01p_write_register(NRF24L01P_REG_CONFIG, new_config);
 }
 
 /**
@@ -276,9 +431,9 @@ void nrf24l01p_disable_tx_ds_interrupt()
  */
 void nrf24l01p_disable_max_rt_interrupt()
 {
-    uint8_t new_config = nrf24l01p_cmd_r_register(NRF24L01P_REG_CONFIG);
+    uint8_t new_config = nrf24l01p_read_register(NRF24L01P_REG_CONFIG);
     new_config |= 1 << 4;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_CONFIG, new_config);
+    nrf24l01p_write_register(NRF24L01P_REG_CONFIG, new_config);
 }
 
 /* nRF24L01+ CRC */
@@ -297,9 +452,9 @@ void nrf24l01_reset_crc()
  */
 void nrf24l01p_enable_crc()
 {
-    uint8_t new_config = nrf24l01p_cmd_r_register(NRF24L01P_REG_CONFIG);
+    uint8_t new_config = nrf24l01p_read_register(NRF24L01P_REG_CONFIG);
     new_config |= 1 << 3;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_CONFIG, new_config);
+    nrf24l01p_write_register(NRF24L01P_REG_CONFIG, new_config);
 }
 
 /**
@@ -307,9 +462,9 @@ void nrf24l01p_enable_crc()
  */
 void nrf24l01p_disable_crc()
 {
-    uint8_t new_config = nrf24l01p_cmd_r_register(NRF24L01P_REG_CONFIG);
+    uint8_t new_config = nrf24l01p_read_register(NRF24L01P_REG_CONFIG);
     new_config &= 0xF7;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_CONFIG, new_config);
+    nrf24l01p_write_register(NRF24L01P_REG_CONFIG, new_config);
 }
 
 /**
@@ -318,7 +473,7 @@ void nrf24l01p_disable_crc()
  */
 void nrf24l01p_crc_length(uint8_t length)
 {
-    uint8_t new_config = nrf24l01p_cmd_r_register(NRF24L01P_REG_CONFIG);
+    uint8_t new_config = nrf24l01p_read_register(NRF24L01P_REG_CONFIG);
     
     switch(length)
     {
@@ -332,7 +487,7 @@ void nrf24l01p_crc_length(uint8_t length)
             break;
     }
 
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_CONFIG, new_config);
+    nrf24l01p_write_register(NRF24L01P_REG_CONFIG, new_config);
 }
 
 
@@ -345,18 +500,18 @@ void nrf24l01p_reset_power()
 
 void nrf24l01p_power_up()
 {
-    uint8_t new_config = nrf24l01p_cmd_r_register(NRF24L01P_REG_CONFIG);
+    uint8_t new_config = nrf24l01p_read_register(NRF24L01P_REG_CONFIG);
     new_config |= 1 << 1;
 
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_CONFIG, new_config);
+    nrf24l01p_write_register(NRF24L01P_REG_CONFIG, new_config);
 }
 
 void nrf24l01p_power_down()
 {
-    uint8_t new_config = nrf24l01p_cmd_r_register(NRF24L01P_REG_CONFIG);
+    uint8_t new_config = nrf24l01p_read_register(NRF24L01P_REG_CONFIG);
     new_config &= 0xFD;
 
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_CONFIG, new_config);
+    nrf24l01p_write_register(NRF24L01P_REG_CONFIG, new_config);
 }
 
 
@@ -369,18 +524,18 @@ void nrf24l01p_reset_mode()
 
 void nrf24l01p_prx_mode()
 {
-    uint8_t new_config = nrf24l01p_cmd_r_register(NRF24L01P_REG_CONFIG);
+    uint8_t new_config = nrf24l01p_read_register(NRF24L01P_REG_CONFIG);
     new_config |= 1 << 0;
 
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_CONFIG, new_config);
+    nrf24l01p_write_register(NRF24L01P_REG_CONFIG, new_config);
 }
 
 void nrf24l01p_ptx_mode()
 {
-    uint8_t new_config = nrf24l01p_cmd_r_register(NRF24L01P_REG_CONFIG);
+    uint8_t new_config = nrf24l01p_read_register(NRF24L01P_REG_CONFIG);
     new_config &= 0xFE;
 
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_CONFIG, new_config);
+    nrf24l01p_write_register(NRF24L01P_REG_CONFIG, new_config);
 }
 
 
@@ -400,7 +555,7 @@ void nrf24l01p_reset_address_widths()
   */
 void nrf24l01p_set_address_widths(uint8_t widths)
 {
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_SETUP_AW, widths - 2);
+    nrf24l01p_write_register(NRF24L01P_REG_SETUP_AW, widths - 2);
 }
 
 /**
@@ -408,7 +563,7 @@ void nrf24l01p_set_address_widths(uint8_t widths)
  */
 void nrf24l01p_reset_rx_address()
 {
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_EN_RXADDR, 0x03);
+    nrf24l01p_write_register(NRF24L01P_REG_EN_RXADDR, 0x03);
 }
 
 /**
@@ -417,10 +572,10 @@ void nrf24l01p_reset_rx_address()
  */
 void nrf24l01p_set_rx_address(uint8_t data_pipe)
 {
-    uint8_t new_en_rxaddr = nrf24l01p_cmd_r_register(NRF24L01P_REG_EN_RXADDR);
+    uint8_t new_en_rxaddr = nrf24l01p_read_register(NRF24L01P_REG_EN_RXADDR);
     new_en_rxaddr |= 1 << data_pipe;
 
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_EN_RXADDR, new_en_rxaddr);
+    nrf24l01p_write_register(NRF24L01P_REG_EN_RXADDR, new_en_rxaddr);
 }
 
 
@@ -439,7 +594,7 @@ void nrf24l01p_reset_enhanced_shockburst()
  */
 void nrf24l01p_enable_enhanced_shockburst()
 {
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_EN_AA, 0x3F);
+    nrf24l01p_write_register(NRF24L01P_REG_EN_AA, 0x3F);
 }
 
 /**
@@ -447,7 +602,7 @@ void nrf24l01p_enable_enhanced_shockburst()
  */
 void nrf24l01p_disable_enhanced_shockburst()
 {
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_EN_AA, 0x00);
+    nrf24l01p_write_register(NRF24L01P_REG_EN_AA, 0x00);
 }
 
 
@@ -468,7 +623,7 @@ void nrf24l01p_reset_auto_retransmit()
 void nrf24l01p_disable_auto_retransmit()
 {
     uint8_t new_setup_retr = 0x00;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_SETUP_RETR, new_setup_retr);
+    nrf24l01p_write_register(NRF24L01P_REG_SETUP_RETR, new_setup_retr);
 }
 
 /**
@@ -477,12 +632,12 @@ void nrf24l01p_disable_auto_retransmit()
  */
 void nrf24l01p_auto_retransmit_count(uint8_t count)
 {
-    uint8_t new_setup_retr = nrf24l01p_cmd_r_register(NRF24L01P_REG_SETUP_RETR);
+    uint8_t new_setup_retr = nrf24l01p_read_register(NRF24L01P_REG_SETUP_RETR);
     
     // Reset ARC register 0
     new_setup_retr |= 0xF0;
     new_setup_retr |= count;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_SETUP_RETR, new_setup_retr);
+    nrf24l01p_write_register(NRF24L01P_REG_SETUP_RETR, new_setup_retr);
 }
 
 /**
@@ -491,12 +646,12 @@ void nrf24l01p_auto_retransmit_count(uint8_t count)
  */
 void nrf24l01p_auto_retransmit_delay(uint8_t delay)
 {
-    uint8_t new_setup_retr = nrf24l01p_cmd_r_register(NRF24L01P_REG_SETUP_RETR);
+    uint8_t new_setup_retr = nrf24l01p_read_register(NRF24L01P_REG_SETUP_RETR);
 
     // Reset ARD register 0
     new_setup_retr |= 0x0F;
     new_setup_retr |= ((delay / 250) - 1) << 4;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_SETUP_RETR, new_setup_retr);
+    nrf24l01p_write_register(NRF24L01P_REG_SETUP_RETR, new_setup_retr);
 }
 
 
@@ -520,7 +675,7 @@ void nrf24l01p_reset_rf()
 void nrf24l01p_set_rf_channel(uint16_t channel)
 {
 	uint16_t new_rf_ch = channel - 2400;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_RF_CH, new_rf_ch);
+    nrf24l01p_write_register(NRF24L01P_REG_RF_CH, new_rf_ch);
 }
 
 /**
@@ -531,7 +686,7 @@ void nrf24l01p_set_rf_channel(uint16_t channel)
 void nrf24l01p_set_rf_channel_2mbps(uint8_t channel)
 {
     uint8_t new_rf_ch = channel - 2400;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_RF_CH, new_rf_ch);
+    nrf24l01p_write_register(NRF24L01P_REG_RF_CH, new_rf_ch);
 }
 
 /**
@@ -540,10 +695,10 @@ void nrf24l01p_set_rf_channel_2mbps(uint8_t channel)
  */
 void nrf24l01p_set_rf_output_power(uint8_t output_power)
 {
-    uint8_t new_rf_setup = nrf24l01p_cmd_r_register(NRF24L01P_REG_RF_SETUP) & 0xF9;
+    uint8_t new_rf_setup = nrf24l01p_read_register(NRF24L01P_REG_RF_SETUP) & 0xF9;
     new_rf_setup |= (output_power << 1);
 
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_RF_SETUP, new_rf_setup);
+    nrf24l01p_write_register(NRF24L01P_REG_RF_SETUP, new_rf_setup);
 }
 
 /**
@@ -553,7 +708,7 @@ void nrf24l01p_set_rf_output_power(uint8_t output_power)
 void nrf24l01p_set_rf_data_rate(uint8_t data_rate)
 {
     // Set value to 0
-    uint8_t new_rf_setup = nrf24l01p_cmd_r_register(NRF24L01P_REG_RF_SETUP) & 0xD7;
+    uint8_t new_rf_setup = nrf24l01p_read_register(NRF24L01P_REG_RF_SETUP) & 0xD7;
     
     switch(data_rate)
     {
@@ -567,7 +722,7 @@ void nrf24l01p_set_rf_data_rate(uint8_t data_rate)
             break;
     }
 
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_RF_SETUP, new_rf_setup);
+    nrf24l01p_write_register(NRF24L01P_REG_RF_SETUP, new_rf_setup);
 }
 
 
@@ -581,14 +736,14 @@ void nrf24l01p_reset_payload()
     for(int i = 0; i < 6; i++)
     {
         // RX_PW_P0 - RX_PW_P5
-        nrf24l01p_cmd_w_register(NRF24L01P_REG_RX_PW_P0 + i, 0);
+        nrf24l01p_write_register(NRF24L01P_REG_RX_PW_P0 + i, 0);
     }
     
     uint8_t reset_dynpd = 0x00;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_DYNPD, reset_dynpd);
+    nrf24l01p_write_register(NRF24L01P_REG_DYNPD, reset_dynpd);
 
     uint8_t reset_feature = 0x00;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_FEATURE, reset_feature);
+    nrf24l01p_write_register(NRF24L01P_REG_FEATURE, reset_feature);
 }
 
 /**
@@ -598,7 +753,7 @@ void nrf24l01p_reset_payload()
  */
 void nrf24l01p_rx_set_static_payload(uint8_t data_pipe, uint8_t length)
 {
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_RX_PW_P0 + data_pipe, length);
+    nrf24l01p_write_register(NRF24L01P_REG_RX_PW_P0 + data_pipe, length);
 }
 
 void nrf24l01p_tx_set_static_payload()
@@ -613,14 +768,14 @@ void nrf24l01p_tx_set_static_payload()
 void nrf24l01p_rx_set_dynamic_payload(uint8_t data_pipe)
 {
     // Enable Dynamic Payload Length
-    uint8_t new_feature = nrf24l01p_cmd_r_register(NRF24L01P_REG_FEATURE);
+    uint8_t new_feature = nrf24l01p_read_register(NRF24L01P_REG_FEATURE);
     new_feature |= 1 << 3;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_FEATURE, new_feature);
+    nrf24l01p_write_register(NRF24L01P_REG_FEATURE, new_feature);
 
     // Enable data pipe
-    uint8_t new_dynpd = nrf24l01p_cmd_r_register(NRF24L01P_REG_DYNPD);
+    uint8_t new_dynpd = nrf24l01p_read_register(NRF24L01P_REG_DYNPD);
     new_dynpd |= 1 << data_pipe;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_DYNPD, new_dynpd);
+    nrf24l01p_write_register(NRF24L01P_REG_DYNPD, new_dynpd);
 }
 
 /**
@@ -629,12 +784,12 @@ void nrf24l01p_rx_set_dynamic_payload(uint8_t data_pipe)
 void nrf24l01p_tx_set_dynamic_payload()
 {
     // Enable Dynamic Payload Length
-    uint8_t new_feature = nrf24l01p_cmd_r_register(NRF24L01P_REG_FEATURE);
+    uint8_t new_feature = nrf24l01p_read_register(NRF24L01P_REG_FEATURE);
     new_feature |= 1 << 3;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_FEATURE, new_feature);
+    nrf24l01p_write_register(NRF24L01P_REG_FEATURE, new_feature);
 
     // Set DPL_P0 bit in DYNPD register
-    uint8_t new_dynpd = nrf24l01p_cmd_r_register(NRF24L01P_REG_DYNPD);
+    uint8_t new_dynpd = nrf24l01p_read_register(NRF24L01P_REG_DYNPD);
     new_dynpd |= 1 << 0;
-    nrf24l01p_cmd_w_register(NRF24L01P_REG_DYNPD, new_dynpd);
+    nrf24l01p_write_register(NRF24L01P_REG_DYNPD, new_dynpd);
 }

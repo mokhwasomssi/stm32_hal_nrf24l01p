@@ -11,7 +11,7 @@
 
 
 static uint8_t rx_payload[2]; // 1-32 bytes.
-static uint8_t tx_payload[2] = {1, 2}; // 1-32 bytes.
+static uint8_t tx_payload[2]; // 1-32 bytes.
 static uint8_t ack_payload[2];
 
 
@@ -104,7 +104,7 @@ void nrf24l01p_tx_init(channel MHz, air_data_rate bps)
 void nrf24l01p_tx_transmit()
 {
     nrf24l01p_tx_write_payload();
-    while(!nrf24l01p_is_tx_data_sent());
+    //while(!nrf24l01p_is_tx_data_sent());
 }
 
 uint8_t nrf24l01p_read_register(uint8_t reg)
@@ -545,7 +545,7 @@ void nrf24l01p_write_rx_payload_with_ack(data_pipe pipe_num, length bytes)
 
     cs_low();
     HAL_SPI_TransmitReceive(NRF24L01P_SPI, &command, &status, 1, 2000);
-    HAL_SPI_Transmit(NRF24L01P_SPI, ack_payroad, bytes, 2000);
+    HAL_SPI_Transmit(NRF24L01P_SPI, ack_payload, bytes, 2000);
     cs_high(); 
 }
 

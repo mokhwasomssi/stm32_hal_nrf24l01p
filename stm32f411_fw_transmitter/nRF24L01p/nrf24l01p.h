@@ -20,8 +20,6 @@
 
 // nRF24L01+ SPI Interface
 #define NRF24L01P_SPI                     (&hspi1)
-
-// nRF24L01+ CS Pin
 #define NRF24L01P_SPI_CS_PIN_PORT         GPIOA 
 #define NRF24L01P_SPI_CS_PIN_NUMBER       GPIO_PIN_4
 
@@ -182,3 +180,5 @@ void nrf24l01p_reuse_tx_payload();
 
 
 #endif /* __NRF24L01P_H__ */
+
+

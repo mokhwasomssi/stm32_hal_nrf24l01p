@@ -1,6 +1,6 @@
-# stm32_hal_nrf24l01_plus
+# stm32_hal_nrf24l01p
 
-__nRF24L01+ , SPI, STM32 HAL__
+__nRF24L01+, SPI, STM32 HAL__
 
 ## 0. Development Environment
 
@@ -11,3 +11,6 @@ __nRF24L01+ , SPI, STM32 HAL__
 ![image](https://user-images.githubusercontent.com/48342925/126250540-7b1a6722-91dc-422f-b028-bfee02d0f004.png)
 
 
+
+
+![image](https://user-images.githubusercontent.com/48342925/126868830-8b13179c-a50b-4d94-b3e5-aab5d05a12bf.png)

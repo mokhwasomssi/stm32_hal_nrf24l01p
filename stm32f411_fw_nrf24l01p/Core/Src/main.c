@@ -37,9 +37,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-/*
-#define TRANSMITTER
- */
+//#define TRANSMITTER
 #define RECEIVER
 
 /* USER CODE END PD */
@@ -105,7 +103,6 @@ int main(void)
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
 
-  //HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, RESET);
 
 #ifdef RECEIVER
   	nrf24l01p_rx_init(2500, _1Mbps);
@@ -125,9 +122,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 #ifdef RECEIVER
-	  nrf24l01p_rx_read_payload(rx_data);
-	  status = nrf24l01p_get_status();
-	  fifo_status = nrf24l01p_get_fifo_status();
+
 #endif
 
 #ifdef TRANSMITTER
@@ -135,18 +130,11 @@ int main(void)
 	  {
 		  tx_data[i]++;
 	  }
-/*
-	  if(nrf24l01p_is_tx_max_rt())
-	  {
-		  nrf24l01p_clear_max_rt();
-	  }
-*/
-	  nrf24l01p_tx_write_payload(tx_data);
-	  status = nrf24l01p_get_status();
-	  fifo_status = nrf24l01p_get_fifo_status();
+
+	  nrf24l01p_tx_transmit(tx_data);
 #endif
 
-	  HAL_Delay(100);
+	  HAL_Delay(50);
 
   }
   /* USER CODE END 3 */
@@ -202,12 +190,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	if(GPIO_Pin == NRF24L01P_IRQ_PIN_NUMBER)
 	{
 #ifdef RECEIVER
-		nrf24l01p_rx_interrupt_flag_clear();
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, RESET);
+	    nrf24l01p_rx_receive(rx_data);
 #endif
 
 #ifdef TRANSMITTER
-		nrf24l01p_tx_interrupt_flag_clear();
+		nrf24l01p_tx_irq();
 #endif
 	}
 

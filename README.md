@@ -5,6 +5,8 @@
 __nRF24L01+ is a single chip 2.4GHz transceiver.__  
 ___TAG__ - `nRF24L01+` `SPI` `STM32 HAL`_  
 
+<img src = "https://user-images.githubusercontent.com/48342925/128331144-e377e215-7260-4fe3-9fbd-e04e87840eb9.gif" width = "70%" height = "70%">
+
 ## Library Features
 - 1:1 transaction
 - Static payload lengths

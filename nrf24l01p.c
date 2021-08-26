@@ -124,7 +124,7 @@ void nrf24l01p_tx_irq()
     {   
         // TX_DS
         HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-        nrf24l01p_clear_ts_ds();
+        nrf24l01p_clear_tx_ds();
     }
 
     else
@@ -259,7 +259,7 @@ void nrf24l01p_clear_rx_dr()
     write_register(NRF24L01P_REG_STATUS, new_status);
 }
 
-void nrf24l01p_clear_ts_ds()
+void nrf24l01p_clear_tx_ds()
 {
     uint8_t new_status = nrf24l01p_get_status();
     new_status |= 0x20;

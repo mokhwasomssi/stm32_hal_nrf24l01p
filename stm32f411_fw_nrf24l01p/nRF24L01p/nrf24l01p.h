@@ -13,27 +13,21 @@
 
 
 #include "spi.h"    // header from stm32cubemx code generate
-#include "stdbool.h"
+#include <stdbool.h>
 
 
 /* User Configurations */
-
-// nRF24L01+ SPI Interface
 #define NRF24L01P_SPI                     (&hspi2)
 
-// nRF24L01+ CS Pin
 #define NRF24L01P_SPI_CS_PIN_PORT         GPIOB 
-#define NRF24L01P_SPI_CS_PIN_NUMBER       GPIO_PIN_12
+#define NRF24L01P_SPI_CS_PIN_NUMBER       GPIO_PIN_13
 
-// nRF24L01+ CE Pin
 #define NRF24L01P_CE_PIN_PORT             GPIOB
-#define NRF24L01P_CE_PIN_NUMBER           GPIO_PIN_13
+#define NRF24L01P_CE_PIN_NUMBER           GPIO_PIN_12
 
-// nRF24L01+ IRQ Pin
-#define NRF24L01P_IRQ_PIN_PORT            GPIOB
-#define NRF24L01P_IRQ_PIN_NUMBER          GPIO_PIN_2
+#define NRF24L01P_IRQ_PIN_PORT            GPIOA
+#define NRF24L01P_IRQ_PIN_NUMBER          GPIO_PIN_8
 
-// nRF24L01+ Payload Length
 #define NRF24L01P_PAYLOAD_LENGTH          8     // 1 - 32bytes
 
 
@@ -60,7 +54,7 @@ typedef enum
 } output_power;
 
 
-/* nRF24L01+ Main Functions */
+/* Main Functions */
 void nrf24l01p_rx_init(channel MHz, air_data_rate bps);
 void nrf24l01p_tx_init(channel MHz, air_data_rate bps);
 
@@ -71,7 +65,7 @@ void nrf24l01p_tx_transmit(uint8_t* tx_payload);
 void nrf24l01p_tx_irq();  
 
 
-/* nRF24L01+ Sub Functions */
+/* Sub Functions */
 void nrf24l01p_reset();
 
 void nrf24l01p_prx_mode();
@@ -92,9 +86,9 @@ uint8_t nrf24l01p_write_tx_fifo(uint8_t* tx_payload);
 void nrf24l01p_flush_rx_fifo();
 void nrf24l01p_flush_tx_fifo();
 
-// Turn off the IRQ pin. LOW to HIGH
+// Clear IRQ pin. Change LOW to HIGH
 void nrf24l01p_clear_rx_dr();
-void nrf24l01p_clear_ts_ds();
+void nrf24l01p_clear_tx_ds();
 void nrf24l01p_clear_max_rt();
 
 void nrf24l01p_set_rf_channel(channel MHz);

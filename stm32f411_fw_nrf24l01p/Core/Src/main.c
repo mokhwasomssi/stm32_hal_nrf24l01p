@@ -51,9 +51,6 @@
 
 /* USER CODE BEGIN PV */
 
-uint8_t status;
-uint8_t fifo_status;
-
 uint8_t rx_data[NRF24L01P_PAYLOAD_LENGTH] = {0};
 uint8_t tx_data[NRF24L01P_PAYLOAD_LENGTH] = {0, 1, 2, 3, 4, 5, 6, 7};
 
@@ -92,7 +89,7 @@ int main(void)
   /* USER CODE END Init */
 
   /* Configure the system clock */
-   SystemClock_Config();
+  SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
 
@@ -122,19 +119,21 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 #ifdef RECEIVER
-
+	  // Nothing to do
 #endif
 
 #ifdef TRANSMITTER
+
 	  for(int i= 0; i < 8; i++)
 	  {
 		  tx_data[i]++;
 	  }
 
+
 	  nrf24l01p_tx_transmit(tx_data);
 #endif
 
-	  HAL_Delay(50);
+	  HAL_Delay(100);
 
   }
   /* USER CODE END 3 */

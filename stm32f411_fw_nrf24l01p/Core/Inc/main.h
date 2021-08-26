@@ -60,13 +60,13 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define LED_Pin GPIO_PIN_13
 #define LED_GPIO_Port GPIOC
-#define nRF24L01__IRQ_Pin GPIO_PIN_2
-#define nRF24L01__IRQ_GPIO_Port GPIOB
-#define nRF24L01__IRQ_EXTI_IRQn EXTI2_IRQn
-#define nRF24L01__CSN_Pin GPIO_PIN_12
-#define nRF24L01__CSN_GPIO_Port GPIOB
-#define nRF24L01__CE_Pin GPIO_PIN_13
-#define nRF24L01__CE_GPIO_Port GPIOB
+#define CE_Pin GPIO_PIN_12
+#define CE_GPIO_Port GPIOB
+#define SPI2_CSN_Pin GPIO_PIN_13
+#define SPI2_CSN_GPIO_Port GPIOB
+#define IRQ_Pin GPIO_PIN_8
+#define IRQ_GPIO_Port GPIOA
+#define IRQ_EXTI_IRQn EXTI9_5_IRQn
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

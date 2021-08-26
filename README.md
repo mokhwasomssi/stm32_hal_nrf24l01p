@@ -42,6 +42,8 @@ ___TAG__ - `nRF24L01+` `SPI` `STM32 HAL`_
 - IRQ (GPIO_EXIT)
     ![image](https://user-images.githubusercontent.com/48342925/131007248-468264f7-698f-40ae-8797-60b361eba55c.png)
 
+    ![image](https://user-images.githubusercontent.com/48342925/131014420-b07a3373-198a-4d0c-a455-06387abaf43b.png)
+
 
 ## Example
 
